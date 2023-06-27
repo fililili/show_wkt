@@ -1,18 +1,17 @@
-      // 获取查询字符串参数
-      const urlParams = new URLSearchParams(window.location.search);
-      const wktInputValue = urlParams.get('wkt-input');
-      
-      // 设置 "wkt-input" 输入字段的默认值
-      const wktInput = document.getElementById('wkt-input');
-      wktInput.value = wktInputValue;
+// 获取查询字符串参数
+const urlParams = new URLSearchParams(window.location.search);
+const wktInputValue = urlParams.get('wkt-input');
+
+// 设置 "wkt-input" 输入字段的默认值
+const wktInput = document.getElementById('wkt-input');
+wktInput.value = wktInputValue;
 
 const shareButton = document.getElementById('share-button');
 shareButton.addEventListener('click', () => {
   const wktInput = document.getElementById('wkt-input');
-  const url = `${window.location.pathname}?wkt-input=${encodeURIComponent(wktInput.value)}`;
+  const url = `${window.location.origin}${window.location.pathname}?wkt-input=${encodeURIComponent(wktInput.value)}`;
   navigator.clipboard.writeText(url);
 });
-
 
 // 创建一个地图对象
 var map = new ol.Map({
@@ -63,6 +62,24 @@ map.addLayer(markerLayer);
 
 // 获取“绘制”按钮元素
 var drawButton = document.getElementById('draw-button');
+  
+function isCoord(coords) {
+  return Array.isArray(coords) && coords.length === 2 &&
+         typeof coords[0] === "number" && typeof coords[1] === "number";
+}
+
+function flattenCoordinates(coords) {
+  let flatArray = [];
+  for (let i = 0; i < coords.length; i++) {
+    if (isCoord(coords[i])) {
+      flatArray.push(coords[i]);
+    } else if (Array.isArray(coords[i])) {
+      flatArray = flatArray.concat(flattenCoordinates(coords[i]));
+    }
+  }
+  return flatArray;
+}
+
 
 // 为“绘制”按钮添加点击事件监听器
 drawButton.addEventListener('click', function() {
@@ -70,16 +87,16 @@ drawButton.addEventListener('click', function() {
   markerLayer.getSource().clear();
 
   // 获取用户输入的WKT格式数据
-  var wktPolygon = document.getElementById('wkt-input').value;
+  var wktGeometry = document.getElementById('wkt-input').value;
 
   // 将WKT格式转换为多边形对象
   var parser = new ol.format.WKT();
-  var polygon = parser.readFeature(wktPolygon);
+  var feature = parser.readFeature(wktGeometry);
+  var geometry = feature.getGeometry();
+  var coords = geometry.getCoordinates();
+  var flatCoords = flattenCoordinates(coords);
 
-// Iterate through all coordinates of the polygon and print them
-var polygon_coords = polygon.getGeometry().getCoordinates();
-polygon_coords.forEach(function(ring) {
-  ring.forEach(function(coord) {
+  flatCoords.forEach(function(coord) {
     console.log('Coordinate: ' + coord.toString());
     var point = new ol.geom.Point(coord);
     var name = '(' + coord.toString() + ')'; // 标注顶点坐标
@@ -88,14 +105,13 @@ polygon_coords.forEach(function(ring) {
       name: name
     }));
   });
-});
 
-// Add the polygon to the vector layer
-vectorLayer.getSource().addFeature(polygon);
-
+  // Add the feature to the vector layer
+  vectorLayer.getSource().addFeature(feature);
 
   // 根据多边形的范围设置地图的中心和缩放比例
-  var extent = polygon.getGeometry().getExtent();
+  var extent = geometry.getExtent();
   map.getView().fit(extent, map.getSize());
 });
+
 drawButton.click();
