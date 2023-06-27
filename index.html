@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .map {
+        height: 400px;
+        width: 100%;
+      }
+    </style>
+    <title>OpenLayers WKT Polygon Example</title>
+  </head>
+  <body>
+    <h2>OpenLayers WKT Polygon Example</h2>
+    <div id="map" class="map"></div>
+    <label for="wkt-input">请输入 WKT 格式的多边形：</label>
+    <input type="text" id="wkt-input">
+    <button id="draw-button">绘制</button>
+    <button id="share-button">分享</button>
+    <div id="map"></div>
+    <script src="https://cdn.jsdelivr.net/npm/ol@v7.4.0/dist/ol.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.4.0/ol.css">
+    <script src="app.js"></script>
+  </body>
+</html>
