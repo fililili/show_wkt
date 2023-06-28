@@ -2,21 +2,50 @@
 <html>
   <head>
     <style>
-      .map {
-        height: 400px;
+      #map {
+        height: calc(100vh - 200px);
         width: 100%;
+      }
+      
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      
+      .input-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      
+      .input-container input {
+        width: 300px;
+      }
+      
+      .button-container {
+        display: flex;
+        gap: 10px;
       }
     </style>
     <title>OpenLayers WKT Polygon Example</title>
   </head>
   <body>
     <h2>OpenLayers WKT Polygon Example</h2>
-    <div id="map" class="map"></div>
-    <label for="wkt-input">请输入 WKT 格式的多边形：</label>
-    <input type="text" id="wkt-input">
-    <button id="draw-button">绘制</button>
-    <button id="share-button">分享</button>
-    <div id="map"></div>
+    <div class="container">
+      <div id="map" class="map"></div>
+      <div class="input-container">
+        <label for="wkt-input">请输入 WKT 格式的多边形：</label>
+        <input type="text" id="wkt-input">
+      </div>
+      <div class="button-container">
+        <button id="draw-button">绘制</button>
+        <button id="share-button">分享</button>
+      </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/ol/dist/ol.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol/ol.css">
     <script src="app.js"></script>
