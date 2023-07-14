@@ -62,7 +62,7 @@ map.addLayer(markerLayer);
 
 // 获取“绘制”按钮元素
 var drawButton = document.getElementById('draw-button');
-  
+
 function isCoord(coords) {
   return Array.isArray(coords) && coords.length === 2 &&
          typeof coords[0] === "number" && typeof coords[1] === "number";
@@ -80,7 +80,6 @@ function flattenCoordinates(coords) {
   return flatArray;
 }
 
-
 // 为“绘制”按钮添加点击事件监听器
 drawButton.addEventListener('click', function() {
   vectorLayer.getSource().clear();
@@ -91,27 +90,30 @@ drawButton.addEventListener('click', function() {
 
   // 将WKT格式转换为多边形对象
   var parser = new ol.format.WKT();
-  var feature = parser.readFeature(wktGeometry);
-  var geometry = feature.getGeometry();
-  var coords = geometry.getCoordinates();
-  var flatCoords = flattenCoordinates(coords);
+  var features = parser.readFeatures(wktGeometry);
 
-  flatCoords.forEach(function(coord) {
-    console.log('Coordinate: ' + coord.toString());
-    var point = new ol.geom.Point(coord);
-    var name = '(' + coord.toString() + ')'; // 标注顶点坐标
-    markerLayer.getSource().addFeature(new ol.Feature({
-      geometry: point,
-      name: name
-    }));
+  features.forEach(function(feature) {
+    var geometry = feature.getGeometry();
+    var coords = geometry.getCoordinates();
+    var flatCoords = flattenCoordinates(coords);
+
+    flatCoords.forEach(function(coord) {
+      console.log('Coordinate: ' + coord.toString());
+      var point = new ol.geom.Point(coord);
+      var name = '(' + coord.toString() + ')'; // 标注顶点坐标
+      markerLayer.getSource().addFeature(new ol.Feature({
+        geometry: point,
+        name: name
+      }));
+    });
+
+    // Add the feature to the vector layer
+    vectorLayer.getSource().addFeature(feature);
+
+    // 根据多边形的范围设置地图的中心和缩放比例
+    var extent = geometry.getExtent();
+    map.getView().fit(extent, map.getSize());
   });
-
-  // Add the feature to the vector layer
-  vectorLayer.getSource().addFeature(feature);
-
-  // 根据多边形的范围设置地图的中心和缩放比例
-  var extent = geometry.getExtent();
-  map.getView().fit(extent, map.getSize());
 });
 
 drawButton.click();
