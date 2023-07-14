@@ -86,11 +86,11 @@ drawButton.addEventListener('click', function() {
   markerLayer.getSource().clear();
 
   // 获取用户输入的WKT格式数据
-  var wktGeometry = document.getElementById('wkt-input').value;
+  var wktGeometries = document.getElementById('wkt-input').value.split(';');
 
   // 将WKT格式转换为多边形对象
   var parser = new ol.format.WKT();
-  var features = parser.readFeatures(wktGeometry);
+  var features = wktGeometries.map(wktGeometry => parser.readFeatures(wktGeometry));
 
   features.forEach(function(feature) {
     var geometry = feature.getGeometry();
