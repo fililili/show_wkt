@@ -69,13 +69,11 @@ function isCoord(coords) {
 }
 
 function flattenCoordinates(coords) {
+  if (isCoord(coords)) return [coords];
+  
   let flatArray = [];
   for (let i = 0; i < coords.length; i++) {
-    if (isCoord(coords[i])) {
-      flatArray.push(coords[i]);
-    } else if (Array.isArray(coords[i])) {
-      flatArray = flatArray.concat(flattenCoordinates(coords[i]));
-    }
+    flatArray = flatArray.concat(flattenCoordinates(coords[i]));
   }
   return flatArray;
 }
@@ -89,8 +87,7 @@ drawButton.addEventListener('click', function() {
   var wktGeometries = document.getElementById('wkt-input').value.split(';');
 
   // 将WKT格式转换为多边形对象
-  var parser = new ol.format.WKT();
-  var features = wktGeometries.map(wktGeometry => parser.readFeatures(wktGeometry));
+  var features = wktGeometries.map(wktGeometry => new ol.format.WKT().readFeature(wktGeometry));
 
   features.forEach(function(feature) {
     var geometry = feature.getGeometry();
